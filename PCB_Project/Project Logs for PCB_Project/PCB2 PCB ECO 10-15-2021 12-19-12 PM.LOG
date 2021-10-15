@@ -1,0 +1,12 @@
+Added Pin To Net: NetName=RESET Pin=J1-1
+Added Pin To Net: NetName=ADC Pin=J1-2
+Added Pin To Net: NetName=EN Pin=J1-3
+Added Pin To Net: NetName=IO16 Pin=J1-4
+Added Pin To Net: NetName=IO14 Pin=J1-5
+Added Pin To Net: NetName=IO12 Pin=J1-6
+Added Pin To Net: NetName=IO13 Pin=J1-7
+Added Pin To Net: NetName=VCC Pin=J1-8
+Added Pin To Net: NetName=CS0 Pin=J1-9
+Added Pin To Net: NetName=MISO Pin=J1-10
+Added Pin To Net: NetName=IO9 Pin=J1-11
+Added Room: Name=Sheet2
