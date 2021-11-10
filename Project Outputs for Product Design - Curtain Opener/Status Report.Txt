@@ -1,0 +1,27 @@
+Output: Gerber Files
+Type  : Gerber
+From  : Variant [[No Variations]] of Project [Product Design - Curtain Opener.PrjPcb]
+   Generated File[PCB2(final).GTO]
+   Generated File[PCB2(final).GTP]
+   Generated File[PCB2(final).GTS]
+   Generated File[PCB2(final).GTL]
+   Generated File[PCB2(final).GBL]
+   Generated File[PCB2(final).GBS]
+   Generated File[PCB2(final).GM2]
+   Generated File[PCB2(final).GM3]
+   Generated File[PCB2(final).GM5]
+   Generated File[PCB2(final).GM13]
+   Generated File[PCB2(final).GM15]
+   Generated File[PCB2(final).GM16]
+   Generated File[PCB2(final).GKO]
+   Generated File[PCB2(final).GPT]
+   Generated File[PCB2(final).GPB]
+   Generated File[PCB2(final).RUL]
+   Generated File[PCB2(final).EXTREP]
+   Generated File[PCB2(final).REP]
+
+
+Files Generated   : 18
+Documents Printed : 0
+
+Finished Output Generation At 9:51:25 PM On 11/10/2021
