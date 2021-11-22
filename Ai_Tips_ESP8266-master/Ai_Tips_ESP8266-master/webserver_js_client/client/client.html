@@ -1,0 +1,30 @@
+<!--
+  11/20/2016
+  Author: Makerbro
+  Language: HTML
+  File: client.html
+  ------------------------------------------------------------------------------
+  Description: 
+  Code for YouTube video demonstrating how to use JavaScript to send data to a
+  webserver running on an ESP8266.
+  https://youtu.be/hP3xQtrRMmQ
+  ------------------------------------------------------------------------------
+  Please consider buying products from ACROBOTIC to help fund future
+  Open-Source projects like this! We'll always put our best effort in every
+  project, and release all our design files and code for you to use. 
+
+  https://acrobotic.com/
+  ------------------------------------------------------------------------------
+  License:
+  Please see attached LICENSE.txt file for details.
+-->
+<script>
+
+var xhr = new XMLHttpRequest();
+var url = "http://192.168.3.31/displaydata";
+xhr.open("POST", url);
+var data = {message:"Hello"};
+xhr.send(JSON.stringify(data));
+console.log("DONE");
+
+</script>
