@@ -1,29 +1,3 @@
-/*------------------------------------------------------------------------------
-  07/01/2018
-  Author: Makerbro
-  Platforms: ESP8266
-  Language: C++/Arduino
-  File: webserver_html.ino
-  ------------------------------------------------------------------------------
-  Description: 
-  Code for YouTube video demonstrating how to use HTML weppages in a web 
-  server's response.
-  https://youtu.be/VNgFbQAVboA
-
-  Do you like my videos? You can support the channel:
-  https://patreon.com/acrobotic
-  https://paypal.me/acrobotic
-  ------------------------------------------------------------------------------
-  Please consider buying products from ACROBOTIC to help fund future
-  Open-Source projects like this! We'll always put our best effort in every
-  project, and release all our design files and code for you to use. 
-
-  https://acrobotic.com/
-  https://amazon.com/acrobotic
-  ------------------------------------------------------------------------------
-  License:
-  Please see attached LICENSE.txt file for details.
-------------------------------------------------------------------------------*/
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <WebSocketsClient.h>
@@ -33,7 +7,6 @@
 IPAddress local_IP(192, 168, 1, 184);
 // Set your Gateway IP address
 IPAddress gateway(192, 168, 1, 1);
-
 IPAddress subnet(255, 255, 0, 0);
 IPAddress primaryDNS(8, 8, 8, 8);   //optional
 IPAddress secondaryDNS(8, 8, 4, 4);
@@ -48,6 +21,7 @@ char* ssid = "SLT-ADSL-60AE3";
 char* password = "MH2236311";
 char* APssid = "Curtain";
 char* APpassword = "12345678";
+
 char webpage[] PROGMEM = R"=====(
 <html>
 <head>
@@ -140,7 +114,120 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
     }
 
 }
+void blinkLED(){
+ rotateStepper(4);
 
+  digitalWrite(pin_led,!digitalRead(pin_led));
+  
+ }
+void rotateStepper(int steps){
+    myStepper.setSpeed(20);
+  // step 1/100 of a revolution:
+  if(steps>=0){
+     for(int i =0;i<steps;i++){
+    myStepper.step(20);
+    yield();
+  }
+  
+  }else{
+     for(int i =0;i<-steps;i++){
+    myStepper.step(-20);
+    yield();
+  }
+  
+  }
+ 
+  }
+
+void toggleLED()
+{
+  digitalWrite(pin_led,!digitalRead(pin_led));
+  server.send_P(200,"text/html", webpage);
+}
+void conPage(){
+  server.send_P(200,"text/html", connectPage);
+}
+
+void onWlan(){
+        if (server.hasArg("plain")== false){ //Check if body received
+ 
+            server.send(200, "text/plain", "Body not received");
+            return;
+ 
+      }
+      String data =  server.arg("plain");
+      int ind = 0;
+      int d = 0;
+      String cred[] = {"",""};
+      while(ind<data.length()){
+        if(data[ind]=='='){
+          int s = ind+1;
+          while(data[ind]!='&' && ind!=data.length()){
+            ind++;
+          }
+          cred[d] = data.substring(s,ind);
+          d++;
+        }
+        ind++;
+      }
+
+//      Serial.println(cred[0]);
+//      Serial.println(cred[1]);
+      File netConf = SPIFFS.open("/conf.txt","w");
+      netConf.print(cred[0]);
+      netConf.print('\n');
+      netConf.print(cred[1]);
+      netConf.close();
+
+
+      String message = "Body received:\n";
+             message +=data;
+             message += "\n";
+      
+      server.send(200, "text/plain", message);
+      Serial.println(message);
+}
+
+void changeServer(){
+    if (server.hasArg("plain")== false){ //Check if body received
+ 
+            server.send(200, "text/plain", "Body not received");
+            return;
+ 
+      }
+      String data =  server.arg("plain");
+      int ind = 0;
+      int d = 0;
+      String serverUrl;
+      while(ind<data.length()){
+        if(data[ind]=='='){
+          int s = ind+1;
+          while(data[ind]!='&' && ind!=data.length()){
+            ind++;
+          }
+          serverUrl = data.substring(s,ind);
+        }
+        ind++;
+      }
+      Serial.println("Testing2");
+      Serial.println(serverUrl);
+//      Serial.println(cred[0]);
+//      Serial.println(cred[1]);
+      File serverFile = SPIFFS.open("/server.txt","w");
+      serverFile.print(serverUrl);
+
+      serverFile.close();
+
+
+      String message = "Body received:\n";
+             message +=data;
+             message += "\n";
+      
+      server.send(200, "text/plain", message);
+      Serial.println(message);
+  
+  
+  }
 
 
 
@@ -240,108 +327,3 @@ void loop()
   server.handleClient();
 
 }
-void blinkLED(){
- rotateStepper();
-
-  digitalWrite(pin_led,!digitalRead(pin_led));
-  
- }
-void rotateStepper(){
-    myStepper.setSpeed(10);
-  // step 1/100 of a revolution:
-  for(int i =0;i<4;i++){
-    myStepper.step(20);
-    yield();
-  }
-  
-  }
-
-void toggleLED()
-{
-  digitalWrite(pin_led,!digitalRead(pin_led));
-  server.send_P(200,"text/html", webpage);
-}
-void conPage(){
-  server.send_P(200,"text/html", connectPage);
-}
-
-void onWlan(){
-        if (server.hasArg("plain")== false){ //Check if body received
- 
-            server.send(200, "text/plain", "Body not received");
-            return;
- 
-      }
-      String data =  server.arg("plain");
-      int ind = 0;
-      int d = 0;
-      String cred[] = {"",""};
-      while(ind<data.length()){
-        if(data[ind]=='='){
-          int s = ind+1;
-          while(data[ind]!='&' && ind!=data.length()){
-            ind++;
-          }
-          cred[d] = data.substring(s,ind);
-          d++;
-        }
-        ind++;
-      }
-
-//      Serial.println(cred[0]);
-//      Serial.println(cred[1]);
-      File netConf = SPIFFS.open("/conf.txt","w");
-      netConf.print(cred[0]);
-      netConf.print('\n');
-      netConf.print(cred[1]);
-      netConf.close();
-
-
-      String message = "Body received:\n";
-             message +=data;
-             message += "\n";
-      
-      server.send(200, "text/plain", message);
-      Serial.println(message);
-}
-
-void changeServer(){
-    if (server.hasArg("plain")== false){ //Check if body received
- 
-            server.send(200, "text/plain", "Body not received");
-            return;
- 
-      }
-      String data =  server.arg("plain");
-      int ind = 0;
-      int d = 0;
-      String serverUrl;
-      while(ind<data.length()){
-        if(data[ind]=='='){
-          int s = ind+1;
-          while(data[ind]!='&' && ind!=data.length()){
-            ind++;
-          }
-          serverUrl = data.substring(s,ind);
-        }
-        ind++;
-      }
-      Serial.println("Testing2");
-      Serial.println(serverUrl);
-//      Serial.println(cred[0]);
-//      Serial.println(cred[1]);
-      File serverFile = SPIFFS.open("/server.txt","w");
-      serverFile.print(serverUrl);
-
-      serverFile.close();
-
-
-      String message = "Body received:\n";
-             message +=data;
-             message += "\n";
-      
-      server.send(200, "text/plain", message);
-      Serial.println(message);
-  
-  
-  }
