@@ -25,7 +25,10 @@ wss.on('connection',function connection(ws){
     ws.on('message',function incoming(data){
         console.log(data.toString())
         wss.clients.forEach((client)=>{
-            client.send(data.toString());
+            if(client!=ws){
+                client.send(data.toString());
+            }
+
         })
         
     })

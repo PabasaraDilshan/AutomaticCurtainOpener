@@ -1,3 +1,4 @@
+#include <ArduinoJson.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <WebSocketsClient.h>
@@ -78,7 +79,8 @@ function init(){
 )=====";
 
 void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
-
+   String strPay="";
+   int i=0;
   switch(type) {
     case WStype_DISCONNECTED:
       USE_SERIAL.printf("[WSc] Disconnected!\n");
@@ -92,7 +94,13 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
       break;
     case WStype_TEXT:
       USE_SERIAL.printf("[WSc] get text: %s\n", payload);
-      blinkLED();
+
+      while(payload[i]){
+        strPay += (char)payload[i];
+        i++;
+        
+      }
+      msgHandler(strPay);
       // send message to server
       // webSocket.sendTXT("message here");
       break;
@@ -103,25 +111,77 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
       // send data to server
       // webSocket.sendBIN(payload, length);
       break;
-        case WStype_PING:
-            // pong will be send automatically
+    case WStype_PING:
+    // pong will be send automatically
             USE_SERIAL.printf("[WSc] get ping\n");
             break;
-        case WStype_PONG:
+    case WStype_PONG:
             // answer to a ping we send
             USE_SERIAL.printf("[WSc] get pong\n");
             break;
     }
 
 }
+String msgHandler(String msg){
+
+   DynamicJsonDocument doc(1024);
+
+  // You can use a String as your JSON input.
+  // WARNING: the string in the input  will be duplicated in the JsonDocument.
+  deserializeJson(doc, msg);
+  JsonObject obj = doc.as<JsonObject>();
+//  char* type = obj["type"];
+//  const char* typeStr = obj["type"];
+//  int type = str2Int(typeStr);
+//  const char* data;
+  int type = obj["type"];
+  int steps;
+  int spd;
+  switch(type){
+    case 0:
+     steps = obj["steps"];
+     spd = obj["speed"];
+     Serial.printf("data Message %d\n",steps);
+     rotateStepper(steps,spd);
+     break;
+    default:
+      Serial.println("Nothing");
+      break;
+  }
+
+  
+
+  return "Success";
+  
+}
+String chars2Str(char* chars){
+  int i = 0;
+  String str = "";
+  while(chars[i]){
+        str += chars[i];
+        i++;
+        
+      }
+}
+int str2Int(const char* str){
+  int i = 0;
+  int out = 0;
+  while (str[i]){
+    out = out*10 + ((int)str[i]-(int)'0');
+  }
+  return out;
+  
+  }
+
+
 void blinkLED(){
- rotateStepper(4);
+// rotateStepper(4);
 
   digitalWrite(pin_led,!digitalRead(pin_led));
   
  }
-void rotateStepper(int steps){
-    myStepper.setSpeed(20);
+void rotateStepper(int steps,int spd){
+    myStepper.setSpeed(spd);
   // step 1/100 of a revolution:
   if(steps>=0){
      for(int i =0;i<steps;i++){

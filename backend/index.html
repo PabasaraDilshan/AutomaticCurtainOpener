@@ -7,12 +7,18 @@
     <title>Document</title>
 </head>
 <body>
-    Hello World
-<input id = "btn1" type = "button" Value = "ON/OFF"/>
+    <label>Steps</label>
+
+    <input id="stepstxt" type="text" />
+
+    <label>Speed</label>
+    <input id = "speedtxt" type="text" />
+<input id = "btn1" type = "button" Value = "Rotate"/>
 <script>
     let ws;
     var btn1 = document.getElementById("btn1");
-    
+    var text1 = document.getElementById("stepstxt");
+    var text2 = document.getElementById("speedtxt");
     function init(){
         if(ws){
             ws.onerror = ws.onopen = ws.onclose = null;
@@ -27,9 +33,16 @@
             console.log(data);
         };
         btn1.onclick = ()=>{
-            if(ws){
-                ws.send("Hellow");
+            var steps = parseInt(text1.value);
+            var speed = parseInt(text2.value);
+            if(steps && speed){
+                if(ws){
+                const data = {type:0,steps:steps, speed:speed};
+                ws.send(JSON.stringify(data));
             }
+            }
+
+            
         }
         ws.onclose = function(){
             ws = null;
