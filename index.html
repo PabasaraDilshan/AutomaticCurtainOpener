@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    Hello World
+<input id = "btn1" type = "button" Value = "ON/OFF"/>
+<script>
+    let ws;
+    var btn1 = document.getElementById("btn1");
+    
+    function init(){
+        if(ws){
+            ws.onerror = ws.onopen = ws.onclose = null;
+            ws.close();
+        }
+        ws = new WebSocket('ws://192.168.1.3:5000');
+        ws.onopen = ()=>{
+            console.log("Connection opened");
+        }
+
+        ws.onmessage = ({data})=>{
+            console.log(data);
+        };
+        btn1.onclick = ()=>{
+            if(ws){
+                ws.send("Hellow");
+            }
+        }
+        ws.onclose = function(){
+            ws = null;
+        }
+    }
+    init();
+</script>
+</body>
+</html>
