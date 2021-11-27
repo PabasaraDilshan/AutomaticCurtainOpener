@@ -18,6 +18,7 @@ int stepCount = 0;
 String serverURL;
 WebSocketsClient webSocket;
 uint8_t pin_led = 2;
+
 char* ssid = "SLT-ADSL-60AE3";
 char* password = "MH2236311";
 char* APssid = "Curtain";
@@ -144,6 +145,14 @@ String msgHandler(String msg){
      Serial.printf("data Message %d\n",steps);
      rotateStepper(steps,spd);
      break;
+    case 1:
+      Serial.printf("digital Read %d\n",digitalRead(4));
+      break;
+    case 2:
+      Serial.println("Calibrating");
+      calibrate();
+      
+      break;
     default:
       Serial.println("Nothing");
       break;
@@ -288,12 +297,25 @@ void changeServer(){
   
   
   }
-
+void calibrate(){
+  while(digitalRead(4)){
+    rotateStepper(1,30);
+  }
+   rotateStepper(-4,30);
+  int len = 0;
+  while(digitalRead(4)){
+    rotateStepper(-1,30);
+    len++;
+  }
+  Serial.printf("Calibrated %d\n",len);
+  
+}
 
 
 void setup()
 {
    Serial.begin(9600);
+   pinMode(4,INPUT_PULLUP);
   pinMode(pin_led, OUTPUT);
   bool isFs = SPIFFS.begin();
   if(isFs){
@@ -349,13 +371,7 @@ void setup()
     Serial.println(ssid1);
     Serial.println(pw1);
     WiFi.begin(ssid,password);
-    
-  }
- 
-  
-  netConf.close();
-  
-  if (!WiFi.config(local_IP, gateway, subnet, primaryDNS, secondaryDNS)) {
+    if (!WiFi.config(local_IP, gateway, subnet, primaryDNS, secondaryDNS)) {
     Serial.println("STA Failed to configure");
   }
 
@@ -369,6 +385,13 @@ void setup()
   Serial.println("");
   Serial.print("IP Address: ");
   Serial.println(WiFi.localIP());
+    
+  }
+ 
+  
+  netConf.close();
+  
+  
 
   server.on("/",conPage);
   server.on("/toggle",toggleLED);

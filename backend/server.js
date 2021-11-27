@@ -1,8 +1,9 @@
 const http = require("http");
 const WebSocket = require("ws");
 const fs = require("fs");
+const dbConnection  = require("./db");
 const PORT = process.env.PORT||5000;
-
+dbConnection();
 const server = http.createServer(async (req,res)=>{
     if(req.url==="/" && req.method === "GET"){
         fs.readFile('index.html',(error,pgResp)=>{
